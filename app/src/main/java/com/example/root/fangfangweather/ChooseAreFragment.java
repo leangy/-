@@ -1,8 +1,9 @@
-package com.example.root.fangfangweather.util;
+package com.example.root.fangfangweather;
 
 import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,9 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.root.fangfangweather.R;
+import com.example.root.fangfangweather.WeatherActivity;
 import com.example.root.fangfangweather.db.City;
 import com.example.root.fangfangweather.db.County;
 import com.example.root.fangfangweather.db.Province;
+import com.example.root.fangfangweather.util.HttpUtil;
+import com.example.root.fangfangweather.util.Utility;
 
 import org.litepal.crud.DataSupport;
 import org.w3c.dom.Text;
@@ -89,6 +93,12 @@ public class ChooseAreFragment extends Fragment {
                 } else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(position);
                     queryCounties();
+                }else if (currentLevel==LEVEL_COUNTY){
+                    String weatherId=countyList.get(position).getWeatherId();
+                    Intent intent=new Intent(getActivity(), WeatherActivity.class);
+                    intent.putExtra("weather_id",weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
@@ -173,7 +183,7 @@ public class ChooseAreFragment extends Fragment {
                 String responseText=response.body().string();
                 boolean result=false;
                 if ("province".equals(type)){
-                    result=Utility.handleProvinceResponse(responseText);
+                    result= Utility.handleProvinceResponse(responseText);
                 }else if ("city".equals(type)){
                     result=Utility.handleCityResponse(responseText,selectedProvince.getId());
                 }else if ("county".equals(type)){
